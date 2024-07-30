@@ -22,8 +22,7 @@ async def auth(session, data, identity):
             token = json_data.get('token')
             address = json_data['user']['address']
             reward_data = await reward(token, identity)
-            result_save(f"identity = {identity} output = {
-                        reward_data}  address =  {address}")
+            result_save(f"identity = {identity} output = {reward_data}  address =  {address}")
         else:
             raise
 
@@ -65,7 +64,7 @@ def result_save(data):
 
 
 async def main():
-    id_list = buffer("tokens.txt")
+    id_list = buffer("data.txt")
     batch_size = len(id_list) // 5
     remainder = int(len(id_list) % 5)
     r_tasks = []
