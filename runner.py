@@ -3,6 +3,7 @@ import aiohttp
 from time import sleep
 from os import system
 from tenacity import retry, wait_fixed, stop_after_attempt
+from sys import version_info
 # url
 auth_url = "https://api.agiex.org/auth/connect"
 reward_url = "https://api.agiex.org/avatar/getReward"
@@ -84,5 +85,11 @@ async def main():
 if __name__ == "__main__":
     while 1:
         system("rm -rf res.txt")
-        asyncio.run(main())
+        if version_info >= (3, 6):
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(main())
+            loop.close()
+        else:
+            asyncio.run(main())
         sleep(291480)
