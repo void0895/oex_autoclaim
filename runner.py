@@ -37,7 +37,8 @@ async def reward(token, identity):
         "Authorization": f"Bearer {token}",
         "Accept-Encoding": "gzip"
     }
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(
+            limit=100)) as session:
         async with session.post(reward_url, data=reward_data, headers=headers) as response:
             if response.status == 200:
                 json_data = await response.json()
@@ -64,18 +65,26 @@ def result_save(data):
 
 
 async def main():
-    id_list = buffer("tokens.txt")
+    id_list = buffer("data.txt")
     batch_size = int(len(id_list) / 5)
     remainder = int(len(id_list) % 5)
+    r_tasks = []
+    if remainder > 0:
+        async with aiohttp.ClientSession() as session:
+            for x in range(len(id_list) - remainder, len(id_list)):
+                task = auth(session, data=id_list[x], identity=x)
+                r_tasks.append(task)
+            await asyncio.gather(*r_tasks)
     async with aiohttp.ClientSession() as session:
-        for x in range(0, len(id_list), batch_size):
-            tasks = [auth(session, id_list[i], identity=i)
-                     for i in range(x, batch_size+x)]
+        for y in range(0, batch_size*5, batch_size):
+            tasks = [auth(session, data=id_list[i], identity=i)
+                     for i in range(y, batch_size+y)]
             await asyncio.gather(*tasks)
             await asyncio.sleep(10)
 
 
-while 1:
-    system("rm -rf res.txt")
-    asyncio.run(main())
-    sleep(291480)
+if __name__ == "__main__":
+    while 1:
+        system("rm -rf res.txt")
+        asyncio.run(main())
+        sleep(291480)
