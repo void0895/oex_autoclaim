@@ -21,7 +21,7 @@ async def auth(session, data, identity):
             json_data = await response.json()
             token = json_data.get('token')
             address = json_data['user']['address']
-            reward_data = await reward(token)
+            reward_data = await reward(token, identity)
             result_save(f"identity = {identity} output = {
                         reward_data}  address =  {address}")
         else:
@@ -29,7 +29,7 @@ async def auth(session, data, identity):
 
 
 @retry(wait=wait_fixed(2), stop=stop_after_attempt(5))
-async def reward(token):
+async def reward(token, identity):
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
@@ -42,7 +42,7 @@ async def reward(token):
             if response.status == 200:
                 json_data = await response.json()
                 if json_data.get('error'):
-                    print("skipping")
+                    print(f"skipping {identity}")
                     return "skipping"
                 else:
                     print("success")
@@ -66,6 +66,7 @@ def result_save(data):
 async def main():
     id_list = buffer("tokens.txt")
     batch_size = int(len(id_list) / 5)
+    remainder = int(len(id_list) % 5)
     async with aiohttp.ClientSession() as session:
         for x in range(0, len(id_list), batch_size):
             tasks = [auth(session, id_list[i], identity=i)
