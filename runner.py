@@ -1,6 +1,7 @@
 import asyncio
 import aiohttp
 from time import sleep
+from os import system
 from tenacity import retry, wait_fixed, stop_after_attempt
 # url
 auth_url = "https://api.agiex.org/auth/connect"
@@ -74,5 +75,6 @@ async def main():
 
 
 while 1:
+    system("rm -rf res.txt")
     asyncio.run(main())
     sleep(291480)
