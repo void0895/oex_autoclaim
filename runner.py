@@ -1,5 +1,6 @@
 import asyncio
 import aiohttp
+import gc
 from time import sleep
 from os import system
 from tenacity import retry, wait_fixed, stop_after_attempt
@@ -92,4 +93,5 @@ if __name__ == "__main__":
             loop.close()
         else:
             asyncio.run(main())
+        gc.collect()
         sleep(291480)
