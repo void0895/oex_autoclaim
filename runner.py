@@ -66,7 +66,7 @@ def result_save(data):
 
 
 async def main():
-    id_list = buffer("data.txt")
+    id_list = buffer("tokens.txt")
     batch_size = len(id_list) // 5
     remainder = int(len(id_list) % 5)
     r_tasks = []
@@ -94,4 +94,4 @@ if __name__ == "__main__":
         else:
             asyncio.run(main())
         gc.collect()
-        sleep(291480)
+        sleep(28800)
